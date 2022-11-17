@@ -27,7 +27,6 @@ public class PostController {
 
 	final PostService service;
 
-
 	@PostMapping("/post/{author}")
 	public PostDto addPost(@RequestBody NewPostDto newPost, @PathVariable String author) {
 		return service.addNewPost(newPost, author);
