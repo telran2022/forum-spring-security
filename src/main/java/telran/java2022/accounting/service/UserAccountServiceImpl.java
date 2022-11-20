@@ -3,6 +3,7 @@ package telran.java2022.accounting.service;
 import java.time.LocalDate;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,8 +24,8 @@ public class UserAccountServiceImpl implements UserAccountService, CommandLineRu
 	final UserAccountRepository repository;
 	final ModelMapper modelMapper;
 	final PasswordEncoder passwordEncoder;
-	long passwordPeriod = 60;
-
+	@Value("${password.period:30}")
+	long passwordPeriod;
 
 	@Override
 	public UserAccountResponseDto addUser(UserRegisterDto userRegisterDto) {

@@ -8,7 +8,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import telran.java2022.post.dao.PostRepository;
 import telran.java2022.post.dto.DatePeriodDto;
 import telran.java2022.post.dto.NewCommentDto;
@@ -17,10 +16,10 @@ import telran.java2022.post.dto.PostDto;
 import telran.java2022.post.dto.exceptions.PostNotFoundException;
 import telran.java2022.post.model.Comment;
 import telran.java2022.post.model.Post;
+import telran.java2022.post.service.logging.PostLogger;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class PostServiceImpl implements PostService {
 	
 	final PostRepository postRepository;
@@ -37,22 +36,21 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	public PostDto getPost(String id) {
-		log.info("post with id {} handled", id);
 		Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 		return modelMapper.map(post, PostDto.class);
 	}
 
 	@Override
+	@PostLogger
 	public PostDto removePost(String id) {
-		log.info("post with id {} handled", id);
 		Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 		postRepository.delete(post);
 		return modelMapper.map(post, PostDto.class);
 	}
 
 	@Override
+	@PostLogger
 	public PostDto updatePost(NewPostDto postUpdateDto, String id) {
-		log.info("post with id {} handled", id);
 		Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 		String content = postUpdateDto.getContent();
 		if (content != null) {
@@ -71,8 +69,8 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
+	@PostLogger
 	public void addLike(String id) {
-		log.info("post with id {} handled", id);
 		Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 		post.addLike();
 		postRepository.save(post);
@@ -80,7 +78,6 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	public PostDto addComment(String id, String author, NewCommentDto newCommentDto) {
-		log.info("post with id {} handled", id);
 		Post post = postRepository.findById(id).orElseThrow(() -> new 	PostNotFoundException(id));
 		Comment comment = new Comment(author, newCommentDto.getMessage());
 		post.addComment(comment);
