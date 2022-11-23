@@ -1,7 +1,6 @@
 package telran.java2022.security.service;
 
 import java.io.IOException;
-import java.security.Principal;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -10,6 +9,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.GenericFilterBean;
@@ -22,9 +22,10 @@ public class ExpiredPasswordFilter extends GenericFilterBean {
 			throws IOException, ServletException {
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) resp;
-		Principal principal = request.getUserPrincipal();
-		if (principal != null && checkEndPoint(request.getMethod(), request.getServletPath())) {
-			UserProfile userProfile = (UserProfile) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (checkEndPoint(request.getMethod(), request.getServletPath()) && authentication != null 
+				&& authentication.getPrincipal() instanceof UserProfile) {
+			UserProfile userProfile = (UserProfile) authentication.getPrincipal();
 			if(!userProfile.isPasswordNotExpired()) {
 				response.sendError(403, "password expired");
 				return;
